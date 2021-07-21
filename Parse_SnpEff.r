@@ -48,6 +48,6 @@ df_vcf_ann$pos_aa <- sapply(df_vcf_ann$X8, function(x){
 	strsplit(tmp, "|", fixed = T)[[1]][14]
 }, USE.NAMES = F)
 
-df_vcf_ann$in_gene <- df_ann$effect %in% c("missense_variant", "synonymous_variant")
+df_vcf_ann$in_gene <- df_vcf_ann$effect %in% c("missense_variant", "synonymous_variant")
 
 df_vcf_ann %>% select(-X3, -X6, -X7, -X8) %>% write_csv(args[2])
