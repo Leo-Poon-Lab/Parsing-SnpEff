@@ -24,3 +24,4 @@ Run the R scripts:
 ``` sh
 Rscript ./Parse_SnpEff.r ../results/example.snpeff.vcf ../results/example.snpeff.csv
 ```
+Please note that the summary csv file only contain the closest match of a SNP rather than all matches. 
