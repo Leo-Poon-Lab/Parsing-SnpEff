@@ -9,7 +9,7 @@ Download SARS-CoV-2 database via:
 java -jar ~/softwares/snpEff/snpEff.jar download -c ~/softwares/snpEff/snpEff.config -v MN908947.3`
 ```
 
-## Annotate
+## Annotation
 Run SnpEff as:
 ``` sh
 # run snpeff annotation on vcf
@@ -19,7 +19,7 @@ bcftools csq --force --phase a -f reference.fasta -g ../data/genes.gff -Ov varia
 
 ```
 
-## Parse the results
+## Parsing the results
 Run the R scripts:
 ``` sh
 Rscript ./Parse_SnpEff.r ../results/example.snpeff.vcf ../results/example.snpeff.csv
