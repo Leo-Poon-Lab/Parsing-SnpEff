@@ -65,7 +65,7 @@ df_vcf_ann$mut_cdna <- gsub("^c\\.", "", df_vcf_ann$mut_cdna)
 df_vcf_ann$mut_aa <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][11]
 }, USE.NAMES = F)
-df_vcf_ann$mut_aa <- gsub("^p\\.", "", df_vcf_ann$mut_cdna)
+df_vcf_ann$mut_aa <- gsub("^p\\.", "", df_vcf_ann$mut_aa)
 
 df_vcf_ann$pos_cdna <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][12]
