@@ -37,10 +37,12 @@ sed -i ' ' 's/Val/V/'g tmp.vcf")
 
 df_vcf_ann <- read_tsv("./tmp.vcf", comment = "#", col_names = F)
 df_vcf_ann$mut <- sapply(df_vcf_ann$X8, function(x){
-	strsplit(x, ";")[[1]][1]
+	tmp <- strsplit(x, ";")[[1]] # only consider the nearest match
+	tmp <- tmp[1:(length(tmp)-1)]
+	paste(tmp, collapse = ";")
 }, USE.NAMES = F)
 df_vcf_ann$tmp <- lapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]] # only consider the nearest match
+	tmp <- strsplit(x, ";")[[1]]
 	tmp <- tmp[length(tmp)]
 })
 df_vcf_ann$effect <- sapply(df_vcf_ann$tmp, function(tmp){
@@ -73,7 +75,7 @@ df_vcf_ann$pos_aa <- sapply(df_vcf_ann$tmp, function(tmp){
 }, USE.NAMES = F)
 
 df_vcf_ann$in_gene <- df_vcf_ann$effect %in% c("missense_variant", "synonymous_variant")
-df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -X8, -tmp)
+df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -tmp)
 
 names(df_out)[1:4] <- c("genome", "POS", "REF", "ALT")
 write_csv(df_out, args[2])
