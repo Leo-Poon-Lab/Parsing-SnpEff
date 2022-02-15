@@ -73,7 +73,7 @@ df_vcf_ann$pos_aa <- sapply(df_vcf_ann$tmp, function(tmp){
 }, USE.NAMES = F)
 
 df_vcf_ann$in_gene <- df_vcf_ann$effect %in% c("missense_variant", "synonymous_variant")
-df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -X8)
+df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -X8, -tmp)
 
 names(df_out)[1:4] <- c("genome", "POS", "REF", "ALT")
 write_csv(df_out, args[2])
