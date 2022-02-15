@@ -11,7 +11,7 @@ library(tidyverse)
 # input_vcf <- "../data/delta_hk.snpeff.vcf"
 input_vcf <- args[1]
 
-file.copy(input_vcf, "./tmp.vcf", overwrite = T)
+file.copy(input_vcf, "./tmp.vcf")
 # the following works for MacOS
 system("sed -i ' ' 's/Ala/A/'g tmp.vcf
 sed -i ' ' 's/Arg/R/'g tmp.vcf
@@ -39,41 +39,44 @@ df_vcf_ann <- read_tsv("./tmp.vcf", comment = "#", col_names = F)
 df_vcf_ann$mut <- sapply(df_vcf_ann$X8, function(x){
 	strsplit(x, ";")[[1]][1]
 }, USE.NAMES = F)
-df_vcf_ann$effect <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2] # only consider the nearest match
+df_vcf_ann$tmp <- lapply(df_vcf_ann$X8, function(x){
+	tmp <- strsplit(x, ";")[[1]] # only consider the nearest match
+	tmp <- tmp[length(tmp)]
+})
+df_vcf_ann$effect <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][2]
 }, USE.NAMES = F)
-df_vcf_ann$impact <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$impact <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][3]
 }, USE.NAMES = F)
-df_vcf_ann$gene <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$gene <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][4]
 }, USE.NAMES = F)
-df_vcf_ann$gene_name <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$gene_name <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][5]
 }, USE.NAMES = F)
-df_vcf_ann$mut_cdna <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$mut_cdna <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][10]
 }, USE.NAMES = F)
-df_vcf_ann$mut_aa <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$mut_cdna <- gsub("^c\\.", "", df_vcf_ann$mut_cdna)
+
+df_vcf_ann$mut_aa <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][11]
 }, USE.NAMES = F)
-df_vcf_ann$pos_cdna <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$mut_aa <- gsub("^p\\.", "", df_vcf_ann$mut_cdna)
+
+df_vcf_ann$pos_cdna <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][12]
 }, USE.NAMES = F)
-df_vcf_ann$pos_aa <- sapply(df_vcf_ann$X8, function(x){
-	tmp <- strsplit(x, ";")[[1]][2]
+df_vcf_ann$pos_aa <- sapply(df_vcf_ann$tmp, function(tmp){
 	strsplit(tmp, "|", fixed = T)[[1]][14]
 }, USE.NAMES = F)
 
 df_vcf_ann$in_gene <- df_vcf_ann$effect %in% c("missense_variant", "synonymous_variant")
+df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -X8)
 
-df_vcf_ann %>% select(-X3, -X6, -X7, -X8) %>% write_csv(args[2])
+names(df_out)[1:4] <- c("genome", "POS", "REF", "ALT")
+write_csv(df_out, args[2])
+
 file.remove("./tmp.vcf")
 file.remove("./tmp.vcf ")
