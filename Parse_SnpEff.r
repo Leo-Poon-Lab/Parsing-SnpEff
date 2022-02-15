@@ -11,7 +11,7 @@ library(tidyverse)
 # input_vcf <- "../data/delta_hk.snpeff.vcf"
 input_vcf <- args[1]
 
-file.copy(input_vcf, "./tmp.vcf")
+file.copy(input_vcf, "./tmp.vcf", overwrite = T)
 # the following works for MacOS
 system("sed -i ' ' 's/Ala/A/'g tmp.vcf
 sed -i ' ' 's/Arg/R/'g tmp.vcf
