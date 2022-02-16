@@ -8,12 +8,12 @@ if (length(args)==0) {
 }
 library(tidyverse)
 
-# input_vcf <- "../data/delta_hk.snpeff.vcf"
+# input_vcf <- "../data/VOC588-P2-trimmed.masked.bam.vcf.snpeff"
 input_vcf <- args[1]
-
-file.copy(input_vcf, "./tmp.vcf")
+file_tmp_vcf <- paste0("./", gsub(".+\\/", "", input_vcf), ".tmp.vcf")
+file.copy(input_vcf, file_tmp_vcf, overwrite = T)
 # the following works for MacOS
-system("sed -i ' ' 's/Ala/A/'g tmp.vcf
+cmd <- "sed -i ' ' 's/Ala/A/'g tmp.vcf
 sed -i ' ' 's/Arg/R/'g tmp.vcf
 sed -i ' ' 's/Asn/N/'g tmp.vcf
 sed -i ' ' 's/Asp/D/'g tmp.vcf
@@ -33,9 +33,11 @@ sed -i ' ' 's/Ser/S/'g tmp.vcf
 sed -i ' ' 's/Thr/T/'g tmp.vcf
 sed -i ' ' 's/Trp/W/'g tmp.vcf
 sed -i ' ' 's/Tyr/Y/'g tmp.vcf
-sed -i ' ' 's/Val/V/'g tmp.vcf")
+sed -i ' ' 's/Val/V/'g tmp.vcf"
+cmd <- gsub("tmp.vcf", file_tmp_vcf, cmd, fixed=T)
+system(cmd)
 
-df_vcf_ann <- read_tsv("./tmp.vcf", comment = "#", col_names = F)
+df_vcf_ann <- read_tsv(file_tmp_vcf, comment = "#", col_names = F)
 df_vcf_ann$mut <- sapply(df_vcf_ann$X8, function(x){
 	tmp <- strsplit(x, ";")[[1]] # only consider the nearest match
 	tmp <- tmp[1:(length(tmp)-1)]
@@ -80,5 +82,5 @@ df_out <- df_vcf_ann %>% select(-X3, -X6, -X7, -tmp)
 names(df_out)[1:4] <- c("genome", "POS", "REF", "ALT")
 write_csv(df_out, args[2])
 
-file.remove("./tmp.vcf")
-file.remove("./tmp.vcf ")
+file.remove(file_tmp_vcf)
+file.remove(paste0(file_tmp_vcf, " "))
